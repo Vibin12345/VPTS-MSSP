@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Engineer Shift Status</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 450px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #222;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 12px;
+      display: block;
+    }
+
+    select, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      margin-top: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .message {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h2>Engineer Shift Status</h2>
+
+    <label>Engineer Name</label>
+    <select id="engineer">
+      <option value="">Select Engineer</option>
+      <option>Chethan Kumkar</option>
+      <option>Vibin Thomas</option>
+      <option>Manikanda Prabhu</option>
+      <option>Uppu Balaji</option>
+      <option>Balamurugan</option>
+      <option>Kiruthick</option>
+      <option>Sharan</option>
+    </select>
+
+    <label>Shift</label>
+    <select id="shift">
+      <option value="">Select Shift</option>
+      <option>Morning</option>
+      <option>General</option>
+      <option>Second</option>
+      <option>Evening</option>
+      <option>Night</option>
+    </select>
+
+    <label>Status</label>
+    <select id="status">
+      <option value="">Select Status</option>
+      <option>Logged In</option>
+      <option>Available</option>
+      <option>Break</option>
+      <option>In Call</option>
+      <option>Logged Out</option>
+      <option>GHOST</option>
+    </select>
+
+    <label>Customer Name</label>
+    <select id="customer">
+      <option value="">Select Customer</option>
+      <option>Kotak Bank</option>
+      <option>LTFS</option>
+      <option>Sagility</option>
+      <option>Biocon</option>
+      <option>Internal</option>
+      <option>Other</option>
+    </select>
+
+    <label>Handover Notes</label>
+    <textarea id="notes" rows="4" placeholder="Add handover notes if any"></textarea>
+
+    <button onclick="submitStatus()">Submit Status</button>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzo39tmCu03QNLHOEZANNtMXdpjIUe85dLiF3w-daHdyzdDZdJVjcX-WU6R6goTVo7sPQ/exec";
+
+    async function submitStatus() {
+      const engineer = document.getElementById("engineer").value;
+      const shift = document.getElementById("shift").value;
+      const status = document.getElementById("status").value;
+      const customer = document.getElementById("customer").value;
+      const notes = document.getElementById("notes").value;
+
+      const messageBox = document.getElementById("message");
+
+      if (!engineer || !shift || !status) {
+        messageBox.style.color = "red";
+        messageBox.innerText = "Please select Engineer, Shift and Status.";
+        return;
+      }
+
+      if (status === "In Call" && !customer) {
+        messageBox.style.color = "red";
+        messageBox.innerText = "Please select Customer Name before choosing In Call.";
+        return;
+      }
+
+      messageBox.style.color = "#444";
+      messageBox.innerText = "Submitting...";
+
+      const payload = {
+        engineer,
+        shift,
+        status,
+        customer,
+        notes
+      };
+
+      try {
+        await fetch(WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        messageBox.style.color = "green";
+        messageBox.innerText = "Status submitted successfully.";
+
+        document.getElementById("status").value = "";
+        document.getElementById("customer").value = "";
+        document.getElementById("notes").value = "";
+
+      } catch (error) {
+        messageBox.style.color = "red";
+        messageBox.innerText = "Failed to submit. Please try again.";
+      }
+    }
+  </script>
+
+</body>
+</html>
